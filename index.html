@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Comparison</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Copperplate Gothic', 'Copperplate', serif;
+            background-color: #111827;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .card {
+            background-color: #1f2937;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .timeline-container {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 1rem 0;
+            scrollbar-width: thin;
+            scrollbar-color: #4b5563 #1f2937;
+        }
+        .timeline-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .timeline-container::-webkit-scrollbar-track {
+            background: #1f2937;
+            border-radius: 10px;
+        }
+        .timeline-container::-webkit-scrollbar-thumb {
+            background-color: #4b5563;
+            border-radius: 10px;
+            border: 2px solid #1f2937;
+        }
+        .month-col {
+            min-width: 250px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300 min-h-screen p-4 sm:p-8">
+
+    <div class="container mx-auto space-y-8">
+        <header class="text-center p-6 bg-gray-800 card">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-100">Calendar Comparison</h1>
+            <p class="mt-2 text-lg text-gray-300">Explore and compare different calendars from around the world.</p>
+        </header>
+
+        <!-- Calendar Comparison Section -->
+        <section class="card p-6 bg-gray-800">
+            <h2 class="text-2xl font-bold text-gray-100 mb-4">Calendar Comparison</h2>
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
+                <div class="flex-1">
+                    <label for="calendar1" class="block text-sm font-medium text-gray-300">Select Calendar 1</label>
+                    <select id="calendar1" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-700 bg-gray-900 text-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option value="gregorian">Gregorian Calendar</option>
+                        <option value="igbo">Igbo Calendar</option>
+                        <option value="ethiopian">Ethiopian Calendar</option>
+                        <option value="french-republican">French Republican Calendar</option>
+                    </select>
+                </div>
+                <div class="flex-1">
+                    <label for="calendar2" class="block text-sm font-medium text-gray-300">Select Calendar 2</label>
+                    <select id="calendar2" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-700 bg-gray-900 text-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option value="igbo">Igbo Calendar</option>
+                        <option value="gregorian">Gregorian Calendar</option>
+                        <option value="ethiopian">Ethiopian Calendar</option>
+                        <option value="french-republican">French Republican Calendar</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="calendar-view" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Calendar 1 View -->
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 id="cal1-title" class="text-xl font-semibold text-gray-100 text-center mb-4"></h3>
+                    <div id="cal1-timeline" class="timeline-container"></div>
+                </div>
+                <!-- Calendar 2 View -->
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 id="cal2-title" class="text-xl font-semibold text-gray-100 text-center mb-4"></h3>
+                    <div id="cal2-timeline" class="timeline-container"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Date Converter Section -->
+        <section class="card p-6 bg-gray-800">
+            <h2 class="text-2xl font-bold text-gray-100 mb-4">Date Converter</h2>
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 items-end">
+                <div class="flex-1">
+                    <label for="date-input" class="block text-sm font-medium text-gray-300">Enter a Gregorian Date</label>
+                    <input type="date" id="date-input" class="mt-1 block w-full rounded-md border-gray-700 bg-gray-900 text-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div class="flex-1">
+                    <label for="convert-to" class="block text-sm font-medium text-gray-300">Convert to</label>
+                    <select id="convert-to" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-700 bg-gray-900 text-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option value="igbo">Igbo Calendar</option>
+                        <option value="ethiopian">Ethiopian Calendar</option>
+                        <option value="french-republican">French Republican Calendar</option>
+                    </select>
+                </div>
+                <button onclick="convertDate()" class="w-full sm:w-auto px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Convert
+                </button>
+            </div>
+            <div id="conversion-result" class="mt-4 text-lg font-medium text-gray-200"></div>
+        </section>
+
+        <!-- Facts & Festivals Section -->
+        <section class="card p-6 bg-gray-800">
+            <h2 class="text-2xl font-bold text-gray-100 mb-4">Facts & Festivals</h2>
+            <div id="facts" class="space-y-4 text-gray-300">
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-200">Gregorian Calendar:</h3>
+                    <p>The names of the months in the Gregorian calendar have their origins in Roman mythology, history, and numbers. For example, **January** is named after Janus, the Roman god of beginnings; **March** after Mars, the god of war; and **July** and **August** after Julius Caesar and Augustus, respectively. The names of the weekdays originate from a mix of Roman and Norse gods: **Sunday** for the Sun, **Monday** for the Moon, **Tuesday** for Tiw (Norse god of war, equivalent to Mars), **Wednesday** for Woden (Odin, equivalent to Mercury), **Thursday** for Thor, **Friday** for Frigg (equivalent to Venus), and **Saturday** for Saturn.</p>
+                </div>
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-200">Igbo Calendar:</h3>
+                    <p>The Igbo calendar is based on a four-day week, which is believed to have originated from the four cardinal market days in Igbo cosmology: **Eke**, **Orie**, **Afo**, and **Nkwo**. An Igbo month consists of **7 weeks** of 4 days, making it 28 days long. These days hold significant spiritual and economic meaning. Historically, this calendar was central to all aspects of life, including farming, trade, and ceremonies. The imposition of the Gregorian calendar during British colonialism led to a dual system where the Igbo calendar continued to be used for traditional and ritual purposes, while the Gregorian calendar was adopted for administrative and economic activities, a legacy that continues to this day. Festivals like the **New Yam Festival (Iwa Ji)** are still celebrated according to this traditional cycle.</p>
+                </div>
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-200">Ethiopian Calendar:</h3>
+                    <p>The Ethiopian calendar, also known as the Ge'ez calendar, is a solar calendar. It has **13 months**: 12 months of exactly 30 days and a 13th month, **Pagumen**, of either 5 or 6 days, which acts as an intercalary month to align the year with the solar cycle. The year begins on September 11 or 12 of the Gregorian calendar and is approximately 7 to 8 years behind. The Ethiopian New Year, **Enkutatash**, is a major festival that marks the end of the rainy season and is celebrated with feasts and dancing.</p>
+                </div>
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-200">French Republican Calendar:</h3>
+                    <p>This calendar was a product of the French Revolution, designed to de-Christianize and de-monarchize time. It had **12 months of 30 days** each, with three 10-day weeks called **décades**. The days were numbered from 1 to 10. The months were given poetic names inspired by nature and agriculture, such as **Vendémiaire** (vintage), **Floréal** (flowering), and **Thermidor** (heat). The last five or six days of the year were holidays known as the **Sansculottides**.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Celestial Cycles Section -->
+        <section class="card p-6 bg-gray-800">
+            <h2 class="text-2xl font-bold text-gray-100 mb-4">Celestial Cycles & Measurement</h2>
+            <div id="celestial-facts" class="space-y-4 text-gray-300">
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-200">Lunar Cycles:</h3>
+                    <p>The **synodic month**, the time it takes for the Moon to complete a full cycle of phases from New Moon to New Moon, is approximately **29.53059 days** (or 29 days, 12 hours, 44 minutes, and 2.9 seconds). This is the basis for most lunisolar calendars. The **sidereal month**, the time it takes for the Moon to orbit the Earth relative to the background stars, is approximately **27.32166 days**.</p>
+                </div>
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-200">Earth's Orbit:</h3>
+                    <p>The length of a year is not a single value. The **tropical year**, which measures the time between two vernal equinoxes and is the basis for the seasons, is approximately **365.24219 days**. The **sidereal year**, the time it takes for Earth to complete one orbit relative to the fixed stars, is slightly longer at approximately **365.25636 days**. The difference is due to the precession of the equinoxes.</p>
+                </div>
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-200">Measuring Time:</h3>
+                    <p>Calendars were originally built on direct observation of celestial bodies. Today, we measure these cycles with incredible precision using tools like **atomic clocks**, which are highly accurate timekeepers based on the vibration of atoms, and **astronomical observatories** that track the precise movements of celestial bodies.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // Data for each calendar
+        const calendars = {
+            'gregorian': {
+                name: 'Gregorian Calendar',
+                months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                daysInMonth: (year, month) => {
+                    return new Date(year, month + 1, 0).getDate();
+                },
+                getToday: () => new Date(),
+            },
+            'igbo': {
+                name: 'Igbo Calendar',
+                weeks: ['Eke', 'Orie', 'Afo', 'Nkwo'],
+                months: ['Onwa Mbụ', 'Onwa Abụọ', 'Onwa Atọ', 'Onwa Anọ', 'Onwa Ise', 'Onwa Isii', 'Onwa Asaa', 'Onwa Asatọ', 'Onwa Itoolu', 'Onwa Iri', 'Onwa Iri na Otu', 'Onwa Iri na Abụọ', 'Onwa Iri na Atọ'],
+                daysInMonth: (year, month) => 28, // A month consists of 7 weeks of 4 days, making 28 days total.
+                getToday: () => {
+                    const today = new Date();
+                    const year = today.getFullYear();
+                    const dayOfYear = Math.floor((today - new Date(year, 0, 0)) / 1000 / 60 / 60 / 24);
+                    // This is a simplified conversion
+                    const igboMonth = Math.floor(dayOfYear / 28) % 13;
+                    const igboDay = (dayOfYear % 28) % 4;
+                    const igboWeek = Math.floor((dayOfYear % 28) / 4);
+                    return { month: igboMonth, day: igboDay, week: igboWeek, year: year };
+                }
+            },
+            'ethiopian': {
+                name: 'Ethiopian Calendar',
+                months: ['Mäskäräm', 'Ṭəqəmt', 'Ḫədar', 'Taḫśaś', 'Ṭərr', 'Yäkatit', 'Mägabit', 'Miyazya', 'Gənbo', 'Säne', 'Ḥamle', 'Nähase', 'Pagumen'],
+                daysInMonth: (year, month) => {
+                    if (month === 12) {
+                        return (year % 4 === 3) ? 6 : 5; // Simplified leap year rule
+                    }
+                    return 30;
+                },
+                getToday: () => {
+                    // Placeholder for a proper conversion library, for demonstration
+                    const today = new Date();
+                    const ethiopianYearOffset = 8;
+                    const ethiopianMonthOffset = 2;
+                    const ethiopianDayOffset = 0;
+                    const year = today.getFullYear() - ethiopianYearOffset;
+                    let month = today.getMonth() + ethiopianMonthOffset;
+                    let day = today.getDate() + ethiopianDayOffset;
+                    if (month > 12) {
+                        month -= 13;
+                        year++;
+                    }
+                    return { year, month, day };
+                }
+            },
+            'french-republican': {
+                name: 'French Republican Calendar',
+                months: ['Vendémiaire', 'Brumaire', 'Frimaire', 'Nivôse', 'Pluviôse', 'Ventôse', 'Germinal', 'Floréal', 'Prairial', 'Messidor', 'Thermidor', 'Fructidor'],
+                daysInMonth: (year, month) => 30,
+                getToday: () => {
+                    // Placeholder for a proper conversion library
+                    const today = new Date();
+                    const year = today.getFullYear() - 1792;
+                    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 8, 22)) / 1000 / 60 / 60 / 24);
+                    const month = Math.floor(dayOfYear / 30);
+                    const day = dayOfYear % 30;
+                    return { year, month, day };
+                }
+            },
+        };
+
+        const cal1Select = document.getElementById('calendar1');
+        const cal2Select = document.getElementById('calendar2');
+        const cal1Title = document.getElementById('cal1-title');
+        const cal2Title = document.getElementById('cal2-title');
+        const cal1Timeline = document.getElementById('cal1-timeline');
+        const cal2Timeline = document.getElementById('cal2-timeline');
+        const dateInput = document.getElementById('date-input');
+        const convertToSelect = document.getElementById('convert-to');
+        const conversionResult = document.getElementById('conversion-result');
+
+        // Function to render a single calendar's timeline
+        const renderCalendar = (calendarId, container, titleElement) => {
+            const calendar = calendars[calendarId];
+            if (!calendar) return;
+
+            titleElement.textContent = calendar.name;
+            container.innerHTML = '';
+
+            const today = calendar.getToday();
+            const year = today.getFullYear ? today.getFullYear() : today.year;
+
+            calendar.months.forEach((monthName, monthIndex) => {
+                const monthContainer = document.createElement('div');
+                monthContainer.className = 'month-col p-4 m-2 bg-gray-700 rounded-lg shadow-inner';
+                
+                const monthHeader = document.createElement('div');
+                monthHeader.className = 'font-bold text-center text-gray-300 mb-2';
+                monthHeader.textContent = monthName;
+                monthContainer.appendChild(monthHeader);
+
+                const daysContainer = document.createElement('div');
+                daysContainer.className = 'grid grid-cols-4 gap-1 text-center';
+                
+                let days = [];
+                if (calendarId === 'igbo') {
+                    days = calendar.weeks;
+                } else {
+                    const totalDays = calendar.daysInMonth(year, monthIndex);
+                    for (let i = 1; i <= totalDays; i++) {
+                        days.push(i);
+                    }
+                }
+                
+                days.forEach(day => {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'text-sm p-1 rounded-md';
+                    dayElement.textContent = day;
+
+                    if (today.getDate) {
+                        if (today.getMonth() === monthIndex && today.getDate() === day) {
+                            dayElement.classList.add('bg-indigo-500', 'text-white', 'font-bold');
+                        }
+                    } else if (calendarId === 'igbo') {
+                         if (today.month === monthIndex && today.week === day) {
+                            dayElement.classList.add('bg-indigo-500', 'text-white', 'font-bold');
+                        }
+                    } else if (calendarId === 'ethiopian' || calendarId === 'french-republican') {
+                        if (today.month === monthIndex && today.day === day) {
+                            dayElement.classList.add('bg-indigo-500', 'text-white', 'font-bold');
+                        }
+                    }
+
+                    daysContainer.appendChild(dayElement);
+                });
+
+                monthContainer.appendChild(daysContainer);
+                container.appendChild(monthContainer);
+            });
+        };
+
+        const updateCalendars = () => {
+            const cal1 = cal1Select.value;
+            const cal2 = cal2Select.value;
+            renderCalendar(cal1, cal1Timeline, cal1Title);
+            renderCalendar(cal2, cal2Timeline, cal2Title);
+        };
+
+        // Date converter function
+        const convertDate = () => {
+            const inputDate = dateInput.value;
+            const targetCalendarId = convertToSelect.value;
+            const targetCalendar = calendars[targetCalendarId];
+
+            if (!inputDate || !targetCalendar) {
+                conversionResult.textContent = 'Please select a date and calendar.';
+                return;
+            }
+
+            const gregorianDate = new Date(inputDate);
+            let convertedDate = 'Conversion not available.';
+            let festivalInfo = '';
+
+            // Simplified conversion logic
+            if (targetCalendarId === 'igbo') {
+                const startOfIgboYear = new Date(gregorianDate.getFullYear(), 0, 1);
+                const dayOfYear = Math.floor((gregorianDate - startOfIgboYear) / (1000 * 60 * 60 * 24));
+                const igboDay = calendars.igbo.weeks[dayOfYear % 4];
+                const igboWeek = Math.floor(dayOfYear / 4) % 7;
+                const igboMonth = Math.floor(dayOfYear / 28) % 13;
+                const igboYear = gregorianDate.getFullYear();
+                convertedDate = `Igbo Date: ${igboDay}, Week ${igboWeek + 1}, Month ${igboMonth + 1}, ${igboYear}`;
+                if (dayOfYear % 28 === 0) {
+                    festivalInfo = ' (Likely a major market festival day)';
+                }
+            } else if (targetCalendarId === 'ethiopian') {
+                const ethiopianDate = new Date(gregorianDate);
+                // This is a highly simplified conversion
+                ethiopianDate.setFullYear(ethiopianDate.getFullYear() - 8);
+                convertedDate = `Ethiopian Date: ${ethiopianDate.toLocaleDateString('en-US')}`;
+            } else if (targetCalendarId === 'french-republican') {
+                const frenchDate = new Date(gregorianDate);
+                 // This is a highly simplified conversion
+                frenchDate.setFullYear(frenchDate.getFullYear() - 1792);
+                convertedDate = `French Republican Date: ${frenchDate.toLocaleDateString('en-US')}`;
+            }
+
+            conversionResult.innerHTML = `${convertedDate}${festivalInfo}`;
+        };
+
+        // Event listeners
+        cal1Select.addEventListener('change', updateCalendars);
+        cal2Select.addEventListener('change', updateCalendars);
+
+        // Initial render
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCalendars();
+        });
+    </script>
+</body>
+</html>
